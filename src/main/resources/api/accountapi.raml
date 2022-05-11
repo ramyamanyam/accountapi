@@ -1,0 +1,43 @@
+#%RAML 1.0
+title: accountapi
+version: v1
+baseUri: http://localhost:8081
+/createAccount:
+  post:
+    body:
+      application/json:
+        example:
+          {
+                 "name":"Raj",
+                 "mobileNo":"9123456785",
+                 "emailid":"raj@gmail.com"
+               }
+    responses:
+      201:
+        body:
+          application/json:
+            example:
+              {
+                      "Message": "Account created successfully"
+                    }  
+/searchaccountID:
+  get:
+    queryParameters:
+      accountID:
+        type: integer
+        example: 1001
+    responses:
+      200:
+        body:
+          application/json:
+            example:
+                    [
+                      {
+                          "name": "john",
+                          "phone": "8000000001",
+                          "email": "john@gmail.com"
+                      }
+                    ]  
+              
+        
+          

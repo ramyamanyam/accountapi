@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:db="http://www.mulesoft.org/schema/mule/db"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/current/mule-db.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	
+	<flow name="createAccountFlow" doc:id="dc74ab84-ff7d-4878-b83b-b417a59955a6" >
+		<logger level="INFO" doc:name="Logger" doc:id="4e243b56-2ab6-4981-bfff-4833302d9268" message="Request recieved........... #[payload]"/>
+		<db:insert doc:name="Insert" doc:id="18b775ec-0b56-4564-aaba-ac323dbd9313" config-ref="Database_Config">
+			<db:sql ><![CDATA[insert into account(name , phone , email)
+values(:name , :phone , :email)]]></db:sql>
+			<db:input-parameters ><![CDATA[#[{
+	name:payload.name,
+	phone:payload.mobileNo,
+	email:payload.emailid
+}]]]></db:input-parameters>
+		</db:insert>
+		<ee:transform doc:name="Transform Message" doc:id="2aa2255c-69d6-45bb-aeba-dded834d9e1b" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	Message: "Account created successfully"
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<logger level="INFO" doc:name="Logger" doc:id="ff1f90e2-6c82-457d-931f-0348610186d4" message="account created......... #[payload]"/>
+	</flow>
+	
+	
+	
+</mule>

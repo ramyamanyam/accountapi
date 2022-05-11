@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:secure-properties="http://www.mulesoft.org/schema/mule/secure-properties"
+	xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:db="http://www.mulesoft.org/schema/mule/db"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="
+http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/current/mule-db.xsd http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd
+http://www.mulesoft.org/schema/mule/secure-properties http://www.mulesoft.org/schema/mule/secure-properties/current/mule-secure-properties.xsd">
+	<configuration doc:name="Configuration" doc:id="c2ab14ac-240f-4b29-bfa3-e9d4631c722d" defaultErrorHandler-ref="Global_Error_Handler" />
+	<secure-properties:config name="Secure_Properties_Config" doc:name="Secure Properties Config" doc:id="c205fad9-769e-4018-8987-f18eb0b77972" file="accountapi-DEV.properties" key="abcdefghijklmnop" >
+		<secure-properties:encrypt algorithm="Blowfish" />
+	</secure-properties:config>
+	<error-handler name="Global_Error_Handler" doc:id="331466d5-0204-4ddb-bb6b-62b49ab7f7be" >
+		<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="0a995d00-f449-41e3-8577-068f0df4b795" type="DB:CONNECTIVITY">
+			<ee:transform doc:name="Transform Message" doc:id="9c5e70be-8bdb-4d5f-9d4c-cdef2f5c9c47" >
+				<ee:message >
+					<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	Statuscode: 500,
+	Message: "unable to process the request,due to database down"
+}]]></ee:set-payload>
+				</ee:message>
+			</ee:transform>
+		</on-error-propagate>
+		<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="bd063c40-ddfd-437e-8630-24618897a13b" type="ANY">
+			<ee:transform doc:name="Transform Message" doc:id="0e6a5a83-d2e2-407f-814a-22646fdb2344" >
+				<ee:message >
+					<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	Statuscode: 500,
+	Message: "unable to process the request,please contact support team."
+}]]></ee:set-payload>
+				</ee:message>
+			</ee:transform>
+		</on-error-propagate>
+	</error-handler>
+	
+	
+	<db:config name="Database_Config" doc:name="Database Config" doc:id="5d2ad708-fad3-478a-afc2-6aa679398e2e" >
+		<db:my-sql-connection host="${secure::db.host}" port="${secure::db.port}" user="${secure::db.username}" password="${secure::db.password}" database="${secure::db.schema}" />
+	</db:config>
+	
+</mule>
+
